@@ -47,7 +47,7 @@ public class Main {
 
             Integer totalMeses = meses.get();
             System.out.println("\n====>\n");
-            System.out.println("Tempo retorno investimento: " + between.getYears() + " ano, " + between.getMonths() + " meses, " + between.getYears() + " dias");
+            System.out.println("Tempo retorno investimento: " + between.getYears() + " ano, " + between.getMonths() + " meses, " + between.getDays() + " dias");
 
             BigDecimal percentualRendimentoNominal = rendimento.divide(entrada, arredondar, HALF_UP).multiply(new BigDecimal(100));
             BigDecimal percentualMensalNominal = percentualRendimentoNominal.divide(new BigDecimal(totalMeses), arredondar, HALF_UP);
@@ -57,22 +57,23 @@ public class Main {
                             return new BigDecimal(days);
                         } else {
                             BigDecimal percentualD = percentualMensalNominal.divide(new BigDecimal(30), arredondar, HALF_UP);
-                            return percentualD.multiply(new BigDecimal(days));
+                            BigDecimal percentualDiasContabilizados = percentualD.multiply(new BigDecimal(days));
+                            return percentualDiasContabilizados;
                         }
                     });
 
-            BigDecimal percentualRendimentoNominalMes = percentualMensalNominal.add(percentualDiarioNominal.get()).setScale(arredondar, HALF_UP);
-            BigDecimal percentualRendimentoNominalAno = percentualRendimentoNominalMes.multiply(new BigDecimal(12)).setScale(arredondar, HALF_UP);
+            BigDecimal percentualMensalComDiasNominal = percentualMensalNominal.add(percentualDiarioNominal.get()).setScale(arredondar, HALF_UP);
+            BigDecimal percentualAnualComDiasNominal = percentualMensalComDiasNominal.multiply(new BigDecimal(12)).setScale(arredondar, HALF_UP);
 
-            BigDecimal ra = percentualRendimentoNominalAno.divide(new BigDecimal(100), arredondar, HALF_UP).add(new BigDecimal(1));
+            BigDecimal ra = percentualAnualComDiasNominal.divide(new BigDecimal(100), arredondar, HALF_UP).add(new BigDecimal(1));
             BigDecimal pia = percentualIpcaAno.divide(new BigDecimal(100), arredondar, HALF_UP).add(new BigDecimal(1));
             BigDecimal ipcaRealAno = ra.divide(pia, arredondar, HALF_UP).subtract(new BigDecimal(1)).multiply(new BigDecimal(100)).setScale(arredondar, HALF_UP);
 
 
             System.out.println("Percentual de rendimento total: " + percentualRendimentoNominal.setScale(2, HALF_UP) + "%");
-            System.out.println("Percentual ao ano: " + percentualRendimentoNominalAno.setScale(2, HALF_UP) + "%");
+            System.out.println("Percentual ao ano: " + percentualAnualComDiasNominal.setScale(2, HALF_UP) + "%");
             System.out.println("Percentual ao ano (considerando inflação): " + ipcaRealAno.setScale(2, HALF_UP) + "%");
-            System.out.println("Percentual ao mês: " + percentualRendimentoNominalMes.setScale(2, HALF_UP) + "%");
+            System.out.println("Percentual ao mês: " + percentualAnualComDiasNominal.setScale(2, HALF_UP) + "%");
 
             System.out.println("\n");
             System.out.print("Novo cálculo? (S ou N): ");
